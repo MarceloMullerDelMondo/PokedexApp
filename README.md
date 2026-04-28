@@ -1,41 +1,31 @@
-Sistema de Gerenciamento Pokedex (Dart/Flutter)
-Este projeto foi desenvolvido como parte das atividades práticas de Sistemas de Informação. O objetivo é aplicar conceitos de programação funcional em Dart e desenvolvimento mobile com Flutter, criando uma interface dinâmica para visualização e gerenciamento de dados de Pokémons.  
+---
 
-Tecnologias Utilizadas
+## Sistema de Gerenciamento Pokedex (Dart/Flutter)
 
-Dart: Linguagem base para toda a lógica de negócio e manipulação de coleções.  
+[cite_start]Este projeto foi desenvolvido como parte das atividades práticas de **Sistemas de Informação**[cite: 1, 2]. [cite_start]O objetivo é aplicar conceitos de programação funcional em **Dart** e desenvolvimento mobile com **Flutter**, criando uma interface dinâmica para visualização e gerenciamento de dados de Pokémons[cite: 1, 2].
 
+### Tecnologias Utilizadas
 
-Flutter: Framework para criação da interface de usuário multiplataforma.  
+* [cite_start]**Dart**: Linguagem base para toda a lógica de negócio e manipulação de coleções[cite: 1, 2].
+* [cite_start]**Flutter**: Framework para criação da interface de usuário multiplataforma[cite: 1, 2].
+* [cite_start]**PokeAPI**: Consumo de assets e sprites oficiais para exibição dos personagens[cite: 1, 2].
+* [cite_start]**Programação Funcional**: Uso intensivo de métodos como `.where()`, `.map()` e `.reduce()` para processamento de dados[cite: 1, 2].
 
+### 📱 Funcionalidades do Projeto
 
-PokeAPI: Consumo de assets e sprites oficiais para exibição dos personagens.  
-
-
-Programação Funcional: Uso intensivo de métodos como .where(), .map() e .reduce() para processamento de dados.  
-
-📱 Funcionalidades do Projeto
 O sistema é focado na experiência de um treinador gerenciando sua equipe, com as seguintes capacidades:
 
+* [cite_start]**Listagem Dinâmica (HomeScreen)**: Exibição de uma lista de Pokémons utilizando `ListView.builder`, extraindo dados de objetos da classe `Pokemon`[cite: 1, 2].
+* [cite_start]**Detalhes e Status (PokemonScreen)**: Tela detalhada que recebe dados via construtor, exibindo nome, nível, tipos e sprites[cite: 1, 2].
+* **Sistema de Batalha Simulado**:
+    * [cite_start]Gerenciamento de **HP** e **XP** com feedback visual dinâmico[cite: 1, 2].
+    * [cite_start]Lógica de **Level-up** automática ao atingir 100 de XP[cite: 1, 2].
+    * [cite_start]Uso de `setState` para atualizações de interface em tempo real[cite: 1, 2].
+* [cite_start]**Navegação com Retorno**: Implementação de `Navigator.pop` para devolver o nível atualizado do Pokémon da tela de detalhes para a lista principal[cite: 1, 2].
 
-Listagem Dinâmica (HomeScreen): Exibição de uma lista de Pokémons utilizando ListView.builder, extraindo dados de objetos da classe Pokemon.  
+### 📂 Estrutura do Projeto
 
-
-Detalhes e Status (PokemonScreen): Tela detalhada que recebe dados via construtor, exibindo nome, nível, tipos e sprites.  
-
-Sistema de Batalha Simulado:
-
-Gerenciamento de HP e XP com feedback visual dinâmico.  
-
-Lógica de Level-up automática ao atingir 100 de XP.  
-
-Uso de setState para atualizações de interface em tempo real.  
-
-
-Navegação com Retorno: Implementação de Navigator.pop para devolver o nível atualizado do Pokémon da tela de detalhes para a lista principal.  
-
-📂 Estrutura do Projeto
-Plaintext
+```text
 ProjetoPokemon/
 ├── lib/
 │   ├── main.dart           # Ponto de entrada e configuração do MaterialApp
@@ -43,28 +33,28 @@ ProjetoPokemon/
 │   ├── home_screen.dart    # Tela principal com a lista de Pokémons
 │   └── pokemon_screen.dart # Tela de detalhes e lógica de status
 └── pubspec.yaml            # Gerenciamento de dependências e assets
-🚀 Como Executar o Projeto
-Pré-requisitos:
+```
 
-Flutter SDK instalado.
+### 🚀 Como Executar o Projeto
 
-Emulador Android/iOS ou navegador configurado.
+**Pré-requisitos:**
+* Flutter SDK instalado.
+* Emulador Android/iOS ou navegador configurado.
 
-Passos:
-
-Clone o repositório:
-
-Bash
-git clone https://github.com/seu-usuario/ProjetoPokemon.git
-Acesse a pasta do projeto:
-
-Bash
-cd ProjetoPokemon
-Instale as dependências:
-
-Bash
-flutter pub get
-Execute o app:
-
-Bash
-flutter run
+**Passos:**
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/ProjetoPokemon.git
+   ```
+2. Acesse a pasta do projeto:
+   ```bash
+   cd ProjetoPokemon
+   ```
+3. Instale as dependências:
+   ```bash
+   flutter pub get
+   ```
+4. Execute o app:
+   ```bash
+   flutter run
+   ```
