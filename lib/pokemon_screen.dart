@@ -50,32 +50,14 @@ class PokemonCard extends StatelessWidget {
             CircleAvatar(
               radius: 36,
               backgroundColor: Colors.deepPurple.shade100,
-              backgroundImage: NetworkImage(pokemon.spriteUrl),
+              backgroundImage: pokemon.spriteUrl.isNotEmpty
+                  ? NetworkImage(pokemon.spriteUrl)
+                  : null,
             ),
             const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  pokemon.name,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: pokemon.typeIds.map((typeId) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: Image.network(
-                        '${pokemon.typeSpriteUrl}$typeId.png',
-                        height: 12,
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
+            Text(
+              pokemon.name,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -219,6 +201,7 @@ class MoveList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (pokemon.moves.isEmpty) return const SizedBox.shrink();
     return Card(
       elevation: 2,
       child: Column(
