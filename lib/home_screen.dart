@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'pokemon.dart';
 import 'pokemon_screen.dart';
 import 'new_pokemon_screen.dart';
+import 'trainer_profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,7 +15,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final collection = FirebaseFirestore.instance.collection('pokemons');
 
-  /// Lê spriteUrl — compatível com docs antigos que tinham spriteId int
+  /// Recarrega o perfil ao voltar da TrainerProfileScreen
+  Future<Map<String, dynamic>?> _loadTrainerProfile() async {
+    final doc = await FirebaseFirestore.instance
+        .collection('config')
+        .doc('treinador')
+        .get();
+    if (doc.exists) return doc.data();
+    return null;
+  }
+
   String _getSpriteUrl(Map<String, dynamic> data) {
     final raw = data['spriteUrl'];
     if (raw is String && raw.isNotEmpty) return raw;
@@ -25,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return '';
   }
 
-  /// Lê types — compatível com docs antigos (List<int>) e novos (List<String>)
   List<String> _getTypes(Map<String, dynamic> data) {
     final raw = data['types'];
     if (raw == null) return [];
@@ -40,6 +49,38 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Pokédex'),
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
+        actions: [
+          FutureBuilder<Map<String, dynamic>?>(
+            future: _loadTrainerProfile(),
+            builder: (context, snapshot) {
+              final avatarIndex = snapshot.data?['avatarIndex'] as int? ?? -1;
+
+              return IconButton(
+                tooltip: 'Perfil do Treinador',
+                icon: avatarIndex >= 0
+                    ? ClipOval(
+                        child: Image.asset(
+                          'assets/trainers/trainer_${avatarIndex + 1}.png',
+                          width: 32,
+                          height: 32,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    : const Icon(Icons.person),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const TrainerProfileScreen(),
+                    ),
+                  );
+                  // Força rebuild para atualizar o avatar no AppBar
+                  setState(() {});
+                },
+              );
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
