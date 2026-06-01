@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'firestore_service.dart';
 import 'pokemon.dart';
 import 'pokemon_screen.dart';
 import 'new_pokemon_screen.dart';
@@ -13,14 +14,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final collection = FirebaseFirestore.instance.collection('pokemons');
-
-  /// Recarrega o perfil ao voltar da TrainerProfileScreen
+  /// Recarrega o perfil ao voltar da TrainerProfileScreen.
   Future<Map<String, dynamic>?> _loadTrainerProfile() async {
-    final doc = await FirebaseFirestore.instance
-        .collection('config')
-        .doc('treinador')
-        .get();
+    final doc = await FirestoreService.trainerProfile.get();
     if (doc.exists) return doc.data();
     return null;
   }
@@ -46,7 +42,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        title: const Text('Pokédex'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Pokédex', style: TextStyle(fontSize: 18)),
+            Text(
+              FirebaseAuth.instance.currentUser?.email ?? '',
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
         actions: [
@@ -80,6 +88,11 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Sair',
+            onPressed: () => FirebaseAuth.instance.signOut(),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -94,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: const Icon(Icons.add),
       ),
       body: StreamBuilder(
-        stream: collection.snapshots(),
+        stream: FirestoreService.pokemons.snapshots(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
@@ -116,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.all(12),
             itemCount: docs.length,
             itemBuilder: (context, index) {
-              final data = docs[index].data() as Map<String, dynamic>;
+              final data = docs[index].data();
               final docId = docs[index].id;
               final spriteUrl = _getSpriteUrl(data);
               final types = _getTypes(data);
@@ -136,9 +149,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   leading: CircleAvatar(
                     radius: 28,
                     backgroundColor: Colors.grey.shade200,
-                    backgroundImage: spriteUrl.isNotEmpty
-                        ? NetworkImage(spriteUrl)
-                        : null,
+                    backgroundImage:
+                        spriteUrl.isNotEmpty ? NetworkImage(spriteUrl) : null,
                     child: spriteUrl.isEmpty
                         ? const Icon(Icons.catching_pokemon)
                         : null,
@@ -176,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   trailing: IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
                     onPressed: () async {
-                      await collection.doc(docId).delete();
+                      await FirestoreService.pokemons.doc(docId).delete();
                     },
                   ),
                   onTap: () {

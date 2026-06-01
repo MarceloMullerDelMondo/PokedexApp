@@ -45,18 +45,15 @@ class PokemonService {
     // Sprite com fallback para CDN
     final sprites = data['sprites'] as Map<String, dynamic>;
     final id = data['id'] as int;
-    final spriteUrl =
-        (sprites['front_default'] as String?) ??
+    final spriteUrl = (sprites['front_default'] as String?) ??
         'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png';
 
     // Tipos como lista de strings
     final rawTypes = data['types'] as List<dynamic>;
     final types = rawTypes
         .map(
-          (t) =>
-              ((t as Map<String, dynamic>)['type']
-                      as Map<String, dynamic>)['name']
-                  as String,
+          (t) => ((t as Map<String, dynamic>)['type']
+              as Map<String, dynamic>)['name'] as String,
         )
         .toList();
 

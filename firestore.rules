@@ -1,0 +1,78 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function validPokemon() {
+      return request.resource.data.keys().hasOnly([
+          'name',
+          'spriteUrl',
+          'types',
+          'level',
+          'moves',
+          'createdAt',
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 60
+        && request.resource.data.spriteUrl is string
+        && request.resource.data.types is list
+        && request.resource.data.types.size() <= 4
+        && request.resource.data.level is int
+        && request.resource.data.level >= 1
+        && request.resource.data.level <= 100
+        && request.resource.data.moves is list
+        && request.resource.data.moves.size() <= 20
+        && (
+          !request.resource.data.keys().hasAny(['createdAt'])
+          || request.resource.data.createdAt is timestamp
+        );
+    }
+
+    function validTrainerProfile() {
+      return request.resource.data.keys().hasOnly([
+          'name',
+          'avatarIndex',
+          'updatedAt',
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 40
+        && request.resource.data.avatarIndex is int
+        && request.resource.data.avatarIndex >= 0
+        && request.resource.data.avatarIndex <= 5
+        && (
+          !request.resource.data.keys().hasAny(['updatedAt'])
+          || request.resource.data.updatedAt is timestamp
+        );
+    }
+
+    match /users/{userId} {
+      allow read, create, update: if isOwner(userId);
+      allow delete: if false;
+
+      match /pokemons/{pokemonId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && validPokemon();
+        allow delete: if isOwner(userId);
+      }
+
+      match /config/treinador {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && validTrainerProfile();
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

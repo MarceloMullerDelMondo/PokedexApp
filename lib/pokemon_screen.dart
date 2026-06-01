@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firestore_service.dart';
 import 'pokemon.dart';
 
 class PokemonScreen extends StatelessWidget {
@@ -117,10 +117,7 @@ class _BattlePanelState extends State<BattlePanel> {
   }
 
   Future<void> _encerrarBatalha() async {
-    await FirebaseFirestore.instance
-        .collection('pokemons')
-        .doc(widget.docId)
-        .update({'level': level});
+    await FirestoreService.pokemons.doc(widget.docId).update({'level': level});
     if (mounted) Navigator.pop(context);
   }
 

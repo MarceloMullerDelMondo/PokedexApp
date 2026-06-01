@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firestore_service.dart';
 import 'pokemon_service.dart';
 
 class NewPokemonScreen extends StatefulWidget {
@@ -59,12 +60,13 @@ class _NewPokemonScreenState extends State<NewPokemonScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
 
-    await FirebaseFirestore.instance.collection('pokemons').add({
+    await FirestoreService.pokemons.add({
       'name': _selected!['name'],
       'spriteUrl': _selected!['spriteUrl'],
       'types': _selected!['types'],
       'level': int.parse(_levelController.text.trim()),
       'moves': [],
+      'createdAt': FieldValue.serverTimestamp(),
     });
 
     if (mounted) Navigator.pop(context);

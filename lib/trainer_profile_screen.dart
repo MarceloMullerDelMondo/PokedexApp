@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firestore_service.dart';
 
 class TrainerProfileScreen extends StatefulWidget {
   const TrainerProfileScreen({super.key});
@@ -27,10 +28,7 @@ class _TrainerProfileScreenState extends State<TrainerProfileScreen> {
   }
 
   Future<void> _loadProfile() async {
-    final doc = await FirebaseFirestore.instance
-        .collection('config')
-        .doc('treinador')
-        .get();
+    final doc = await FirestoreService.trainerProfile.get();
     if (doc.exists) {
       final data = doc.data()!;
       setState(() {
@@ -44,9 +42,10 @@ class _TrainerProfileScreenState extends State<TrainerProfileScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
 
-    await FirebaseFirestore.instance.collection('config').doc('treinador').set({
+    await FirestoreService.trainerProfile.set({
       'name': _nameController.text.trim(),
       'avatarIndex': _selectedAvatar,
+      'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
 
     setState(() => _saving = false);
