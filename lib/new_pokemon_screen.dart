@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firestore_service.dart';
 import 'pokemon_service.dart';
+import 'location_service.dart';
 
 class NewPokemonScreen extends StatefulWidget {
   const NewPokemonScreen({super.key});
@@ -20,7 +21,7 @@ class _NewPokemonScreenState extends State<NewPokemonScreen> {
   bool _loadingDetails = false;
   final _levelController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _saving = false;
+  bool _capturing = false;
 
   @override
   void initState() {
@@ -55,10 +56,12 @@ class _NewPokemonScreenState extends State<NewPokemonScreen> {
     });
   }
 
-  // Ação 3: salvar no Firestore
-  Future<void> _salvar() async {
+  // Ação 3: capturar Pokémon com localização
+  Future<void> _capturar() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _saving = true);
+    setState(() => _capturing = true);
+
+    final position = await getLocation();
 
     await FirestoreService.pokemons.add({
       'name': _selected!['name'],
@@ -67,9 +70,20 @@ class _NewPokemonScreenState extends State<NewPokemonScreen> {
       'level': int.parse(_levelController.text.trim()),
       'moves': [],
       'createdAt': FieldValue.serverTimestamp(),
+      if (position != null) 'latitude': position.latitude,
+      if (position != null) 'longitude': position.longitude,
     });
 
-    if (mounted) Navigator.pop(context);
+    if (!mounted) return;
+
+    final mensagem = position != null
+        ? 'Capturado em ${position.latitude.toStringAsFixed(4)}°, ${position.longitude.toStringAsFixed(4)}°'
+        : 'Capturado sem localização';
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensagem)),
+    );
+    Navigator.pop(context);
   }
 
   // UI fase 1: lista de busca
@@ -237,15 +251,37 @@ class _NewPokemonScreenState extends State<NewPokemonScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Botão cadastrar
-            ElevatedButton(
-              onPressed: _saving ? null : _salvar,
+            // Aviso de localização
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.deepPurple.shade50,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.my_location, color: Colors.deepPurple),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'O app vai solicitar sua localização ao capturar.',
+                      style: TextStyle(color: Colors.deepPurple),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Botão capturar
+            ElevatedButton.icon(
+              onPressed: _capturing ? null : _capturar,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              child: _saving
+              icon: _capturing
                   ? const SizedBox(
                       height: 20,
                       width: 20,
@@ -254,7 +290,11 @@ class _NewPokemonScreenState extends State<NewPokemonScreen> {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Text('Cadastrar', style: TextStyle(fontSize: 16)),
+                  : const Icon(Icons.catching_pokemon),
+              label: Text(
+                _capturing ? 'Capturando...' : 'Capturar Pokémon',
+                style: const TextStyle(fontSize: 16),
+              ),
             ),
           ],
         ),

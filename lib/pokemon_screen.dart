@@ -24,6 +24,8 @@ class PokemonScreen extends StatelessWidget {
           children: [
             PokemonCard(pokemon: pokemon),
             const SizedBox(height: 16),
+            LocationCard(pokemon: pokemon),
+            const SizedBox(height: 16),
             BattlePanel(pokemon: pokemon, docId: docId),
             const SizedBox(height: 16),
             MoveList(pokemon: pokemon),
@@ -58,6 +60,46 @@ class PokemonCard extends StatelessWidget {
             Text(
               pokemon.name,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LocationCard extends StatelessWidget {
+  final Pokemon pokemon;
+
+  const LocationCard({super.key, required this.pokemon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Icon(
+              pokemon.hasLocation ? Icons.place : Icons.location_off,
+              color: pokemon.hasLocation ? Colors.deepPurple : Colors.grey,
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Local da captura',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                Text(
+                  pokemon.hasLocation
+                      ? '${pokemon.latitude!.toStringAsFixed(4)}°, ${pokemon.longitude!.toStringAsFixed(4)}°'
+                      : 'Localização não registrada',
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+              ],
             ),
           ],
         ),

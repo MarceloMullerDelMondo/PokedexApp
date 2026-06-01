@@ -140,6 +140,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 typeIds: const [],
                 level: data['level'] ?? 1,
                 moves: List<String>.from(data['moves'] ?? []),
+                latitude: (data['latitude'] as num?)?.toDouble(),
+                longitude: (data['longitude'] as num?)?.toDouble(),
               );
 
               return Card(
@@ -165,7 +167,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Nível ${pokemon.level}'),
+                      Row(
+                        children: [
+                          Text('Nível ${pokemon.level}'),
+                          if (pokemon.hasLocation) ...[
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.place,
+                              size: 14,
+                              color: Colors.deepPurple,
+                            ),
+                          ],
+                        ],
+                      ),
                       if (types.isNotEmpty)
                         Wrap(
                           spacing: 4,
